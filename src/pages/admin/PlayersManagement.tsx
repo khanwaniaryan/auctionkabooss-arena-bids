@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import {
@@ -35,11 +34,10 @@ import {
   Mail,
   DollarSign,
   Calendar,
-  Cricket,
+  Trophy,
   Search
 } from "lucide-react";
 
-// Mock data
 const mockPlayers = [
   {
     id: 1,
@@ -214,7 +212,6 @@ const PlayersManagement = () => {
     });
   };
 
-  // Format currency in Indian Rupees (₹)
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -223,7 +220,6 @@ const PlayersManagement = () => {
     }).format(amount);
   };
 
-  // Filter players based on search query
   const filteredPlayers = players.filter(player =>
     player.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     player.role.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -471,7 +467,7 @@ const PlayersManagement = () => {
                     <span className="font-medium text-auction-charcoal">{formatCurrency(player.basePrice)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Cricket className="h-4 w-4 text-auction-steel" />
+                    <Trophy className="h-4 w-4 text-auction-steel" />
                     <span className="text-auction-steel">Game:</span>
                     <span className="font-medium text-auction-charcoal">{player.gameType}</span>
                   </div>
