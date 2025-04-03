@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import {
@@ -17,7 +16,8 @@ import {
   DollarSign,
   Play,
   Pause,
-  Gavel
+  Gavel,
+  Users
 } from "lucide-react";
 
 // Mock player data
