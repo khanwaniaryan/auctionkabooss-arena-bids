@@ -21,7 +21,8 @@ import {
   Gavel,
   AlertCircle,
   Users,
-  TrendingUp
+  TrendingUp,
+  Trophy
 } from "lucide-react";
 
 // Team and player data (in a real app, this would be fetched from API)
