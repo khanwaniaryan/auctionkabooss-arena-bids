@@ -10,12 +10,14 @@ import {
   LogOut,
   Menu,
   X,
-  ChevronDown
+  ChevronDown,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useContext } from "react";
 import { AuthContext } from "@/App";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -109,11 +111,22 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
         </div>
       </header>
 
+      {/* Admin View Header Banner */}
+      <div className="bg-auction-blue/10 py-2 px-4 md:px-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-auction-blue" />
+            <span className="text-sm font-medium text-auction-blue">Admin View</span>
+          </div>
+          <span className="text-xs text-auction-steel">Tournament: IPL Mega Auction 2025</span>
+        </div>
+      </div>
+
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside 
           className={cn(
-            "w-64 bg-white border-r border-auction-gray/30 fixed left-0 top-[61px] bottom-0 z-30 md:relative overflow-y-auto transition-all duration-300 transform",
+            "w-64 bg-white border-r border-auction-gray/30 fixed left-0 top-[97px] bottom-0 z-30 md:relative overflow-y-auto transition-all duration-300 transform",
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           )}
         >
@@ -140,6 +153,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
         <main className="flex-1 p-4 md:p-6 overflow-x-hidden">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-auction-charcoal">{title}</h1>
+            <Separator className="mt-4" />
           </div>
           
           {children}

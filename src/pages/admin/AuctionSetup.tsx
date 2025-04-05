@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   User2,
   Clock,
@@ -19,6 +18,8 @@ import {
   Gavel,
   Users
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 // Mock player data
 const availablePlayers = [
@@ -285,6 +286,34 @@ const AuctionSetup = () => {
     }).format(amount);
   };
 
+  // Group players by role
+  const getPlayerCountByRole = (players: any[]) => {
+    const roleCount: Record<string, number> = {
+      "Batsman": 0,
+      "Bowler": 0,
+      "All-rounder": 0,
+      "Wicket-keeper": 0
+    };
+    
+    players.forEach(player => {
+      const role = player.role || "";
+      if (role.toLowerCase().includes("batsman")) {
+        roleCount["Batsman"]++;
+      } else if (role.toLowerCase().includes("bowler")) {
+        roleCount["Bowler"]++;
+      } else if (role.toLowerCase().includes("all-rounder") || role.toLowerCase().includes("all rounder")) {
+        roleCount["All-rounder"]++;
+      } else if (role.toLowerCase().includes("wicket") || role.toLowerCase().includes("keeper")) {
+        roleCount["Wicket-keeper"]++;
+      } else {
+        // Default to batsman if role is not recognized
+        roleCount["Batsman"]++;
+      }
+    });
+    
+    return roleCount;
+  };
+
   return (
     <AdminLayout title="Auction Setup">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -398,7 +427,7 @@ const AuctionSetup = () => {
             <CardContent>
               {currentPlayer ? (
                 <div className="flex flex-col items-center">
-                  <div className="h-24 w-24 rounded-xl overflow-hidden mb-4">
+                  <div className="h-36 w-36 rounded-xl overflow-hidden mb-6">
                     <img 
                       src={currentPlayer.image} 
                       alt={currentPlayer.name}
@@ -406,7 +435,7 @@ const AuctionSetup = () => {
                     />
                   </div>
                   <h2 className="text-2xl font-bold text-auction-charcoal mb-1">{currentPlayer.name}</h2>
-                  <div className="flex items-center gap-2 mb-6">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-auction-blue/10 text-auction-blue">
                       {currentPlayer.role}
                     </span>
@@ -415,7 +444,7 @@ const AuctionSetup = () => {
                     </span>
                   </div>
                   
-                  <div className="timer-circle mb-6">
+                  <div className="timer-circle w-16 h-16 text-lg mb-4">
                     {timeLeft}
                   </div>
                   
@@ -428,7 +457,7 @@ const AuctionSetup = () => {
                         </div>
                       )}
                     </div>
-                    <div className="text-2xl font-bold text-auction-charcoal">
+                    <div className="text-3xl font-bold text-auction-charcoal">
                       {formatCurrency(currentBid.amount)}
                     </div>
                   </div>
@@ -543,7 +572,7 @@ const AuctionSetup = () => {
           )}
         </div>
 
-        {/* Right Column - Team Status */}
+        {/* Right Column - Team Status (Combined View) */}
         <div className="lg:col-span-1">
           <Card className="auction-card">
             <CardHeader className="pb-3">
@@ -553,104 +582,73 @@ const AuctionSetup = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <Tabs defaultValue="budget" className="w-full">
-                <TabsList className="grid grid-cols-2 m-3">
-                  <TabsTrigger value="budget">Budget Status</TabsTrigger>
-                  <TabsTrigger value="players">Players Acquired</TabsTrigger>
-                </TabsList>
-                <TabsContent value="budget" className="pt-0">
-                  <div className="divide-y divide-auction-gray/30">
-                    {teamData.map((team) => (
-                      <div key={team.id} className="p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="h-10 w-10 rounded-lg overflow-hidden flex-shrink-0">
-                            <img 
-                              src={team.logo} 
-                              alt={team.name}
-                              className="h-full w-full object-cover"
-                            />
+              <div className="divide-y divide-auction-gray/30">
+                {teamData.map((team) => {
+                  const playerRoleCounts = getPlayerCountByRole(team.players);
+                  
+                  return (
+                    <div key={team.id} className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={team.logo} alt={team.name} />
+                          <AvatarFallback>{team.name.substring(0, 2)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-auction-charcoal">{team.name}</h3>
+                          <div className="flex justify-between">
+                            <span className="text-xs text-auction-steel">Players: {team.players.length}</span>
+                            <span className="text-sm font-medium text-auction-success">
+                              {formatCurrency(team.remaining)}
+                            </span>
                           </div>
-                          <div className="flex-1">
-                            <h3 className="font-medium text-auction-charcoal">{team.name}</h3>
-                            <div className="flex justify-between">
-                              <span className="text-xs text-auction-steel">Players: {team.players.length}</span>
-                              <span className="text-xs font-medium text-auction-success">
-                                {formatCurrency(team.remaining)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="w-full bg-auction-gray/20 rounded-full h-2">
-                          <div 
-                            className="bg-auction-gradient h-2 rounded-full" 
-                            style={{ width: `${(team.spent / team.budget) * 100}%` }}
-                          ></div>
-                        </div>
-                        <div className="flex justify-between mt-1">
-                          <span className="text-xs text-auction-steel">Spent: {formatCurrency(team.spent)}</span>
-                          <span className="text-xs text-auction-steel">Total: {formatCurrency(team.budget)}</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </TabsContent>
-                <TabsContent value="players" className="pt-0">
-                  <div className="divide-y divide-auction-gray/30">
-                    {teamData.map((team) => (
-                      <div key={team.id} className="p-4">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="h-10 w-10 rounded-lg overflow-hidden flex-shrink-0">
-                            <img 
-                              src={team.logo} 
-                              alt={team.name}
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-medium text-auction-charcoal">{team.name}</h3>
-                            <div className="flex justify-between">
-                              <span className="text-xs text-auction-steel">
-                                {team.players.length} Players
-                              </span>
-                              <span className="text-xs font-medium text-auction-success">
-                                {formatCurrency(team.remaining)} left
-                              </span>
-                            </div>
-                          </div>
+                      
+                      <div className="w-full bg-auction-gray/20 rounded-full h-2.5 mb-3">
+                        <div 
+                          className="bg-auction-gradient h-2.5 rounded-full" 
+                          style={{ width: `${(team.spent / team.budget) * 100}%` }}
+                        ></div>
+                      </div>
+                      
+                      <div className="flex justify-between mb-4 text-xs">
+                        <span className="text-auction-steel">Used: {formatCurrency(team.spent)}</span>
+                        <span className="text-auction-steel">Total: {formatCurrency(team.budget)}</span>
+                      </div>
+                      
+                      <div className="bg-auction-gray/10 p-3 rounded-lg">
+                        <h4 className="text-sm font-medium mb-2">Acquired Players</h4>
+                        <div className="flex flex-wrap gap-3">
+                          {Object.entries(playerRoleCounts).map(([role, count]) => (
+                            count > 0 && (
+                              <Badge 
+                                key={role} 
+                                variant="outline" 
+                                className="px-3 py-1 bg-auction-blue/5 text-auction-blue border-auction-blue/20"
+                              >
+                                {role}: {count}
+                              </Badge>
+                            )
+                          ))}
                         </div>
-                        {team.players.length > 0 ? (
-                          <div className="space-y-2 mt-2">
+                      </div>
+                      
+                      {team.players.length > 0 && (
+                        <div className="mt-3">
+                          <div className="flex gap-1 overflow-x-auto py-2 scrollbar-thin">
                             {team.players.map((player: any) => (
-                              <div key={player.id} className="flex items-center gap-2 p-2 bg-auction-gray/10 rounded-lg">
-                                <div className="h-8 w-8 rounded-full overflow-hidden flex-shrink-0">
-                                  <img 
-                                    src={player.image} 
-                                    alt={player.name}
-                                    className="h-full w-full object-cover"
-                                  />
-                                </div>
-                                <div className="flex-1">
-                                  <div className="flex justify-between">
-                                    <h4 className="text-sm font-medium">{player.name}</h4>
-                                    <span className="text-xs font-medium text-auction-blue">
-                                      {formatCurrency(player.boughtFor)}
-                                    </span>
-                                  </div>
-                                  <span className="text-xs text-auction-steel">{player.role}</span>
-                                </div>
-                              </div>
+                              <Avatar key={player.id} className="h-8 w-8 rounded-full border-2 border-white">
+                                <AvatarImage src={player.image} alt={player.name} />
+                                <AvatarFallback>{player.name.substring(0, 2)}</AvatarFallback>
+                              </Avatar>
                             ))}
                           </div>
-                        ) : (
-                          <p className="text-sm text-auction-steel text-center py-2">
-                            No players acquired yet
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
         </div>
