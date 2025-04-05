@@ -64,6 +64,12 @@ const TeamLayout: React.FC<TeamLayoutProps> = ({
             </Link>
           </div>
           
+          <div className="flex items-center gap-2 md:ml-6 md:mr-auto">
+            <Users className="h-4 w-4 text-auction-teal" />
+            <span className="text-sm font-medium text-auction-teal">Team View</span>
+            <span className="text-sm text-auction-charcoal font-medium ml-1.5">- {teamName}</span>
+          </div>
+          
           <div className="flex items-center gap-3">
             {isLiveAuction && (
               <div className="hidden md:flex items-center gap-1 px-3 py-1 bg-auction-live/10 text-auction-live rounded-full text-xs font-medium">
@@ -89,23 +95,12 @@ const TeamLayout: React.FC<TeamLayoutProps> = ({
           </div>
         </div>
       </header>
-
-      {/* Team View Header Banner */}
-      <div className="bg-auction-teal/10 py-2 px-4 md:px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-auction-teal" />
-            <span className="text-sm font-medium text-auction-teal">Team View</span>
-          </div>
-          <span className="text-sm text-auction-charcoal font-medium">{teamName}</span>
-        </div>
-      </div>
       
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside 
           className={cn(
-            "w-64 bg-white border-r border-auction-gray/30 fixed left-0 top-[97px] bottom-0 z-30 md:relative overflow-y-auto transition-all duration-300 transform",
+            "w-64 bg-white border-r border-auction-gray/30 fixed left-0 top-[65px] bottom-0 z-30 md:relative overflow-y-auto transition-all duration-300 transform",
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           )}
         >

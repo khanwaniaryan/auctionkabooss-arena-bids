@@ -89,6 +89,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
             </Link>
           </div>
           
+          <div className="flex items-center gap-2 md:ml-6 md:mr-auto">
+            <Shield className="h-4 w-4 text-auction-blue" />
+            <span className="text-sm font-medium text-auction-blue">Admin View</span>
+            <span className="text-xs text-auction-steel ml-2 hidden md:inline">Tournament: IPL Mega Auction 2025</span>
+          </div>
+          
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-auction-gradient flex items-center justify-center text-white font-medium">
@@ -111,22 +117,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
         </div>
       </header>
 
-      {/* Admin View Header Banner */}
-      <div className="bg-auction-blue/10 py-2 px-4 md:px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-auction-blue" />
-            <span className="text-sm font-medium text-auction-blue">Admin View</span>
-          </div>
-          <span className="text-xs text-auction-steel">Tournament: IPL Mega Auction 2025</span>
-        </div>
-      </div>
-
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside 
           className={cn(
-            "w-64 bg-white border-r border-auction-gray/30 fixed left-0 top-[97px] bottom-0 z-30 md:relative overflow-y-auto transition-all duration-300 transform",
+            "w-64 bg-white border-r border-auction-gray/30 fixed left-0 top-[65px] bottom-0 z-30 md:relative overflow-y-auto transition-all duration-300 transform",
             mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           )}
         >
