@@ -90,9 +90,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
           </div>
           
           <div className="flex items-center gap-2 md:ml-6 md:mr-auto">
-            <Shield className="h-4 w-4 text-auction-blue" />
-            <span className="text-sm font-medium text-auction-blue">Admin View</span>
-            <span className="text-xs text-auction-steel ml-2 hidden md:inline">Tournament: IPL Mega Auction 2025</span>
+            <Shield className="h-5 w-5 text-auction-blue" />
+            <div className="font-bold text-base text-auction-blue px-2 py-1 rounded-md bg-auction-blue/10">
+              Admin View
+              <span className="text-xs text-auction-steel ml-2 hidden md:inline">Tournament: IPL Mega Auction 2025</span>
+            </div>
           </div>
           
           <div className="flex items-center gap-4">

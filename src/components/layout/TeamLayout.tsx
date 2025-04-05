@@ -65,9 +65,11 @@ const TeamLayout: React.FC<TeamLayoutProps> = ({
           </div>
           
           <div className="flex items-center gap-2 md:ml-6 md:mr-auto">
-            <Users className="h-4 w-4 text-auction-teal" />
-            <span className="text-sm font-medium text-auction-teal">Team View</span>
-            <span className="text-sm text-auction-charcoal font-medium ml-1.5">- {teamName}</span>
+            <Users className="h-5 w-5 text-auction-teal" />
+            <div className="font-bold text-base text-auction-teal px-2 py-1 rounded-md bg-auction-teal/10">
+              Team View
+              <span className="text-auction-charcoal ml-1.5">- {teamName}</span>
+            </div>
           </div>
           
           <div className="flex items-center gap-3">
