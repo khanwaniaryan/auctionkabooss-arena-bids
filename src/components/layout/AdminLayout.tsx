@@ -11,13 +11,15 @@ import {
   Menu,
   X,
   ChevronDown,
-  Shield
+  Shield,
+  Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useContext } from "react";
 import { AuthContext } from "@/App";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -31,11 +33,20 @@ interface NavItem {
   active?: boolean;
 }
 
+// Mock secret bids for demonstration
+const mockSecretBids = [
+  { id: 1, teamName: "Mumbai Indians", amount: 70000000, timestamp: new Date() },
+  { id: 2, teamName: "Chennai Super Kings", amount: 80000000, timestamp: new Date() },
+  { id: 3, teamName: "Royal Challengers Bangalore", amount: 65000000, timestamp: new Date() }
+];
+
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useContext(AuthContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [secretBidsOpen, setSecretBidsOpen] = useState(false);
+  const [secretBids, setSecretBids] = useState(mockSecretBids);
 
   const navItems: NavItem[] = [
     {
@@ -69,6 +80,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
     navigate("/admin/login");
   };
 
+  // Format currency in Indian Rupees (₹)
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const isAuctionPage = location.pathname === "/admin/auction";
+
   return (
     <div className="min-h-screen bg-auction-white flex flex-col">
       {/* Top Navigation Bar */}
@@ -98,6 +120,18 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
           </div>
           
           <div className="flex items-center gap-4">
+            {isAuctionPage && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-auction-blue border-auction-blue hover:bg-auction-blue/10"
+                onClick={() => setSecretBidsOpen(true)}
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                <span>View Secret Bids</span>
+              </Button>
+            )}
+            
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-auction-gradient flex items-center justify-center text-white font-medium">
                 A
@@ -156,6 +190,38 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title }) => {
           {children}
         </main>
       </div>
+
+      {/* Secret Bids Dialog */}
+      <Dialog open={secretBidsOpen} onOpenChange={setSecretBidsOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-center">Secret Bids</DialogTitle>
+          </DialogHeader>
+          <div className="p-4">
+            {secretBids.length > 0 ? (
+              <div className="divide-y divide-auction-gray/30">
+                {secretBids.map((bid) => (
+                  <div key={bid.id} className="py-3 flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">{bid.teamName}</h4>
+                      <p className="text-sm text-auction-steel">
+                        {bid.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </p>
+                    </div>
+                    <div className="text-lg font-bold text-auction-success">
+                      {formatCurrency(bid.amount)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center">
+                <p className="text-auction-steel">No secret bids have been submitted yet.</p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

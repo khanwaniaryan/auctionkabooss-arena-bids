@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import {
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import SecretBidAlert from "@/components/auction/SecretBidAlert";
 
 // Mock player data
 const availablePlayers = [
@@ -144,6 +146,7 @@ const AuctionSetup = () => {
     amount: 0,
     teamId: 0
   });
+  const [showSecretBidAlert, setShowSecretBidAlert] = useState(false);
   const { toast } = useToast();
 
   // Timer effect
@@ -262,6 +265,11 @@ const AuctionSetup = () => {
       return;
     }
 
+    // Check if bid exceeds 50 lacs (5,000,000) for the first time
+    if (amount >= 5000000 && currentBid.amount < 5000000) {
+      setShowSecretBidAlert(true);
+    }
+
     // Update current bid
     setCurrentBid({
       amount,
@@ -312,6 +320,19 @@ const AuctionSetup = () => {
     });
     
     return roleCount;
+  };
+
+  const handleSecretBidAlertClose = () => {
+    setShowSecretBidAlert(false);
+  };
+
+  const handleOpenSecretBid = () => {
+    setShowSecretBidAlert(false);
+    // In a real app, this would open the secret bid dialog for the team
+    toast({
+      title: "Secret Bid",
+      description: "Teams would now be able to submit their secret bids.",
+    });
   };
 
   return (
@@ -427,7 +448,7 @@ const AuctionSetup = () => {
             <CardContent>
               {currentPlayer ? (
                 <div className="flex flex-col items-center">
-                  <div className="h-36 w-36 rounded-xl overflow-hidden mb-6">
+                  <div className="h-48 w-48 rounded-xl overflow-hidden mb-6">
                     <img 
                       src={currentPlayer.image} 
                       alt={currentPlayer.name}
@@ -444,7 +465,7 @@ const AuctionSetup = () => {
                     </span>
                   </div>
                   
-                  <div className="timer-circle w-16 h-16 text-lg mb-4">
+                  <div className="timer-circle w-12 h-12 text-lg mb-4">
                     {timeLeft}
                   </div>
                   
@@ -457,7 +478,7 @@ const AuctionSetup = () => {
                         </div>
                       )}
                     </div>
-                    <div className="text-3xl font-bold text-auction-charcoal">
+                    <div className="text-4xl font-bold text-auction-charcoal">
                       {formatCurrency(currentBid.amount)}
                     </div>
                   </div>
@@ -572,7 +593,7 @@ const AuctionSetup = () => {
           )}
         </div>
 
-        {/* Right Column - Team Status (Combined View) */}
+        {/* Right Column - Team Status */}
         <div className="lg:col-span-1">
           <Card className="auction-card">
             <CardHeader className="pb-3">
@@ -618,7 +639,7 @@ const AuctionSetup = () => {
                       
                       <div className="bg-auction-gray/10 p-3 rounded-lg">
                         <h4 className="text-sm font-medium mb-2">Acquired Players</h4>
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2">
                           {Object.entries(playerRoleCounts).map(([role, count]) => (
                             count > 0 && (
                               <Badge 
@@ -653,6 +674,13 @@ const AuctionSetup = () => {
           </Card>
         </div>
       </div>
+      
+      {/* Secret Bid Alert Dialog */}
+      <SecretBidAlert 
+        open={showSecretBidAlert} 
+        onClose={handleSecretBidAlertClose}
+        onSubmitSecretBid={handleOpenSecretBid}
+      />
     </AdminLayout>
   );
 };

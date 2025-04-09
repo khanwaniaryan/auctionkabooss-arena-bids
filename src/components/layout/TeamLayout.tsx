@@ -9,10 +9,14 @@ import {
   LogOut,
   Menu,
   X,
-  CircleDollarSign
+  CircleDollarSign,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface TeamLayoutProps {
   children: ReactNode;
@@ -29,6 +33,8 @@ const TeamLayout: React.FC<TeamLayoutProps> = ({
 }) => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [secretBidOpen, setSecretBidOpen] = useState(false);
+  const [secretBidAmount, setSecretBidAmount] = useState("");
 
   // Format currency in Indian Rupees (₹)
   const formatCurrency = (amount: number) => {
@@ -42,6 +48,15 @@ const TeamLayout: React.FC<TeamLayoutProps> = ({
   const handleLogout = () => {
     // In a real app, this would call an auth logout function
     navigate("/team/login");
+  };
+
+  const submitSecretBid = () => {
+    // In a real app, this would send the bid to a server
+    console.log(`Secret bid submitted: ${secretBidAmount}`);
+    // Close the dialog
+    setSecretBidOpen(false);
+    // Reset the input
+    setSecretBidAmount("");
   };
 
   return (
@@ -74,10 +89,22 @@ const TeamLayout: React.FC<TeamLayoutProps> = ({
           
           <div className="flex items-center gap-3">
             {isLiveAuction && (
-              <div className="hidden md:flex items-center gap-1 px-3 py-1 bg-auction-live/10 text-auction-live rounded-full text-xs font-medium">
-                <Clock className="h-3 w-3 animate-pulse" />
-                <span>Live Auction</span>
-              </div>
+              <>
+                <div className="hidden md:flex items-center gap-1 px-3 py-1 bg-auction-live/10 text-auction-live rounded-full text-xs font-medium">
+                  <Clock className="h-3 w-3 animate-pulse" />
+                  <span>Live Auction</span>
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-auction-success border-auction-success hover:bg-auction-success/10"
+                  onClick={() => setSecretBidOpen(true)}
+                >
+                  <EyeOff className="h-4 w-4 mr-1" />
+                  <span>Secret Bid</span>
+                </Button>
+              </>
             )}
             
             <div className="hidden md:flex items-center gap-1">
@@ -133,6 +160,52 @@ const TeamLayout: React.FC<TeamLayoutProps> = ({
           {children}
         </main>
       </div>
+
+      {/* Secret Bid Dialog */}
+      <Dialog open={secretBidOpen} onOpenChange={setSecretBidOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Submit Secret Bid</DialogTitle>
+          </DialogHeader>
+          <div className="p-4">
+            <div className="mb-4 text-center text-auction-steel">
+              Your secret bid will only be revealed when all teams have submitted their bids.
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <CircleDollarSign className="h-5 w-5 text-auction-success" />
+                <Input 
+                  type="number"
+                  placeholder="Enter bid amount"
+                  value={secretBidAmount}
+                  onChange={(e) => setSecretBidAmount(e.target.value)}
+                  className="flex-1"
+                />
+              </div>
+              <div className="text-sm text-auction-steel text-right">
+                Available Budget: {formatCurrency(balance)}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSecretBidOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="button"
+              className="bg-auction-gradient hover:bg-auction-gradient-hover"
+              onClick={submitSecretBid}
+              disabled={!secretBidAmount || Number(secretBidAmount) <= 0 || Number(secretBidAmount) > balance}
+            >
+              Submit Bid
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
