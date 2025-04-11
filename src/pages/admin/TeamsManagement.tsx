@@ -34,7 +34,8 @@ import {
   Lock,
   DollarSign,
   Upload,
-  Image
+  Image,
+  Trophy
 } from "lucide-react";
 
 // Mock data
@@ -89,6 +90,13 @@ const mockTeams = [
   }
 ];
 
+// Mock tournaments for dropdown
+const mockTournaments = [
+  { id: 1, name: "IPL Mega Auction 2025" },
+  { id: 2, name: "IPL Mini Auction 2026" },
+  { id: 3, name: "The Hundred 2025" },
+];
+
 interface TeamFormData {
   name: string;
   username: string;
@@ -100,6 +108,7 @@ interface TeamFormData {
   reservedAmount: number;
   logo: string | null;
   logoFile: File | null;
+  tournamentId: number;
 }
 
 const TeamsManagement = () => {
@@ -115,15 +124,16 @@ const TeamsManagement = () => {
     spentAmount: 0,
     reservedAmount: 0,
     logo: null,
-    logoFile: null
+    logoFile: null,
+    tournamentId: 1 // Default to first tournament
   });
   const { toast } = useToast();
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: ["totalBudget", "remainingAmount", "spentAmount", "reservedAmount"].includes(name)
+      [name]: ["totalBudget", "remainingAmount", "spentAmount", "reservedAmount", "tournamentId"].includes(name)
         ? Number(value)
         : value
     });
@@ -177,7 +187,8 @@ const TeamsManagement = () => {
       spentAmount: 0,
       reservedAmount: 0,
       logo: null,
-      logoFile: null
+      logoFile: null,
+      tournamentId: 1
     });
 
     toast({
@@ -280,6 +291,22 @@ const TeamsManagement = () => {
                       onChange={handleFormChange}
                       placeholder="••••••••"
                     />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="tournamentId">Tournament</Label>
+                    <select
+                      id="tournamentId"
+                      name="tournamentId"
+                      value={formData.tournamentId}
+                      onChange={handleFormChange}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    >
+                      {mockTournaments.map(tournament => (
+                        <option key={tournament.id} value={tournament.id}>
+                          {tournament.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               </div>
