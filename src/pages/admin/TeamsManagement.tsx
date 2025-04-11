@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { FileInput } from "@/components/ui/file-input";
 import { 
   Users, 
   Plus,
@@ -31,7 +32,9 @@ import {
   Mail,
   User,
   Lock,
-  DollarSign
+  DollarSign,
+  Upload,
+  Image
 } from "lucide-react";
 
 // Mock data
@@ -95,6 +98,8 @@ interface TeamFormData {
   remainingAmount: number;
   spentAmount: number;
   reservedAmount: number;
+  logo: string | null;
+  logoFile: File | null;
 }
 
 const TeamsManagement = () => {
@@ -108,7 +113,9 @@ const TeamsManagement = () => {
     totalBudget: 100000000,
     remainingAmount: 100000000,
     spentAmount: 0,
-    reservedAmount: 0
+    reservedAmount: 0,
+    logo: null,
+    logoFile: null
   });
   const { toast } = useToast();
 
@@ -119,6 +126,28 @@ const TeamsManagement = () => {
       [name]: ["totalBudget", "remainingAmount", "spentAmount", "reservedAmount"].includes(name)
         ? Number(value)
         : value
+    });
+  };
+
+  const handleLogoChange = (file: File | null) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({
+          ...formData,
+          logo: reader.result as string,
+          logoFile: file
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClearLogo = () => {
+    setFormData({
+      ...formData, 
+      logo: null,
+      logoFile: null
     });
   };
 
@@ -133,7 +162,7 @@ const TeamsManagement = () => {
       spentAmount: formData.spentAmount,
       reservedAmount: formData.reservedAmount,
       players: 0,
-      logo: `https://placehold.co/100x100/007BFF/FFFFFF?text=${formData.name.substring(0, 2).toUpperCase()}`
+      logo: formData.logo || `https://placehold.co/100x100/007BFF/FFFFFF?text=${formData.name.substring(0, 2).toUpperCase()}`
     };
 
     setTeams([...teams, newTeam]);
@@ -146,7 +175,9 @@ const TeamsManagement = () => {
       totalBudget: 100000000,
       remainingAmount: 100000000,
       spentAmount: 0,
-      reservedAmount: 0
+      reservedAmount: 0,
+      logo: null,
+      logoFile: null
     });
 
     toast({
@@ -199,6 +230,15 @@ const TeamsManagement = () => {
                 <h3 className="text-sm font-medium text-auction-steel mb-2">Team Information</h3>
                 <Separator className="mb-4" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2 md:col-span-2">
+                    <Label>Team Logo</Label>
+                    <FileInput
+                      onFileChange={handleLogoChange}
+                      preview={formData.logo || undefined}
+                      onClear={handleClearLogo}
+                      label="Upload Team Logo"
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="name">Team Name</Label>
                     <Input

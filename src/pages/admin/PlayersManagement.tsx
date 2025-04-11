@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import AdminLayout from "@/components/layout/AdminLayout";
 import {
@@ -17,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { FileInput } from "@/components/ui/file-input";
 import {
   Select,
   SelectContent,
@@ -35,7 +37,9 @@ import {
   DollarSign,
   Calendar,
   Trophy,
-  Search
+  Search,
+  Upload,
+  Image
 } from "lucide-react";
 
 const mockPlayers = [
@@ -129,6 +133,8 @@ interface PlayerFormData {
   gameType: string;
   role: string;
   playerState: string;
+  image: string | null;
+  imageFile: File | null;
 }
 
 const PlayersManagement = () => {
@@ -144,7 +150,9 @@ const PlayersManagement = () => {
     email: "",
     gameType: "CRICKET",
     role: "Batsman",
-    playerState: "Regular"
+    playerState: "Regular",
+    image: null,
+    imageFile: null
   });
   const { toast } = useToast();
 
@@ -160,6 +168,28 @@ const PlayersManagement = () => {
     setFormData({
       ...formData,
       [name]: value
+    });
+  };
+
+  const handleImageChange = (file: File | null) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({
+          ...formData,
+          image: reader.result as string,
+          imageFile: file
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClearImage = () => {
+    setFormData({
+      ...formData, 
+      image: null,
+      imageFile: null
     });
   };
 
@@ -181,7 +211,7 @@ const PlayersManagement = () => {
       gameType: formData.gameType,
       role: formData.role,
       playerState: formData.playerState,
-      image: `https://placehold.co/100x100/007BFF/FFFFFF?text=${nameInitials}`
+      image: formData.image || `https://placehold.co/100x100/007BFF/FFFFFF?text=${nameInitials}`
     };
 
     setPlayers([...players, newPlayer]);
@@ -195,7 +225,9 @@ const PlayersManagement = () => {
       email: "",
       gameType: "CRICKET",
       role: "Batsman",
-      playerState: "Regular"
+      playerState: "Regular",
+      image: null,
+      imageFile: null
     });
 
     toast({
@@ -265,6 +297,15 @@ const PlayersManagement = () => {
                   <h3 className="text-sm font-medium text-auction-steel mb-2">Basic Information</h3>
                   <Separator className="mb-4" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2 md:col-span-2">
+                      <Label>Player Photo</Label>
+                      <FileInput
+                        onFileChange={handleImageChange}
+                        preview={formData.image || undefined}
+                        onClear={handleClearImage}
+                        label="Upload Player Photo"
+                      />
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="name">Player Name</Label>
                       <Input
